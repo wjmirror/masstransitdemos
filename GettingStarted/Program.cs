@@ -37,27 +37,23 @@ namespace GettingStarted
                         //x.AddSagas(entryAssembly);
                         //x.AddActivities(entryAssembly);
 
+
                         bus.AddConsumer<GettingStartedConsumer>();
 
-                        bus.UsingRabbitMq((context, config) =>
+                        bus.UsingAzureServiceBus((context, config) =>
                         {
-                            config.Host("localhost", "/", rabbit =>
-                            {
-                                rabbit.Username("guest");
-                                rabbit.Password("guest");
-                            });
+                            config.Host("Endpoint=sb://weberpjimwang.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=y7+nT92nvAKQD5pJys6dteZTA3aWrCbK3FL7ZFFgjgA=");
                             config.Message<HelloMessage>(cfg =>
                             {
                                 cfg.SetEntityName("weberp.demo");
                             });
                             config.ReceiveEndpoint("weberp.demo.test", cfgEndpoint =>
                             {
-                                cfgEndpoint.ConfigureConsumeTopology = false;
-                                cfgEndpoint.Bind<HelloMessage>();
                                 cfgEndpoint.ConfigureConsumer<GettingStartedConsumer>(context);
                             });
 
                         });
+                     
                     });
                     services.AddHostedService<Worker>();
                 });
